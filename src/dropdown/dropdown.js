@@ -148,6 +148,8 @@ angular.module('ui.bootstrap.dropdown', ['ui.bootstrap.multiMap', 'ui.bootstrap.
     selectedOption = null,
     body = $document.find('body');
 
+  var /*HTMLElement*/dropdownMenuPre, dropdownMenuAfter;
+
   $element.addClass('dropdown');
 
   this.init = function() {
@@ -161,6 +163,11 @@ angular.module('ui.bootstrap.dropdown', ['ui.bootstrap.multiMap', 'ui.bootstrap.
     }
 
     keynavEnabled = angular.isDefined($attrs.keyboardNav);
+
+    if (self.dropdownMenu) {
+      dropdownMenuPre = self.dropdownMenu[0].previousElementSibling;
+      dropdownMenuAfter = self.dropdownMenu[0].nextElementSibling;
+    }
   };
 
   this.toggle = function(open) {
@@ -233,7 +240,13 @@ angular.module('ui.bootstrap.dropdown', ['ui.bootstrap.multiMap', 'ui.bootstrap.
   };
 
   function removeDropdownMenu() {
-    $element.append(self.dropdownMenu);
+    if (dropdownMenuPre) {
+      dropdownMenuPre.parentNode.insertBefore(self.dropdownMenu[0], dropdownMenuPre.nextSibling);
+    } else if (dropdownMenuAfter) {
+      dropdownMenuAfter.parentNode.insertBefore(self.dropdownMenu[0], dropdownMenuAfter);
+    } else {
+      $element.append(self.dropdownMenu);
+    }
   }
 
   scope.$watch('isOpen', function(isOpen, wasOpen) {
